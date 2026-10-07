@@ -7,6 +7,8 @@ import {
   Users, MapPin, Building, Globe, Send, CheckCircle, Award
 } from 'lucide-react';
 
+const API_BASE_URL = 'http://localhost/agaro/php_export';
+
 interface DepartmentsViewProps {
   currentLang: Language;
   initialSubTab?: string | null;
@@ -20,8 +22,46 @@ export default function DepartmentsView({ currentLang, initialSubTab, onSubTabCh
   const [mayorInfo, setMayorInfo] = useState<any>(null);
 
   useEffect(() => {
-    setCabinetMembers(getStoredCabinet());
-    setMayorInfo(getStoredMayor());
+    const loadGovernmentImages = async () => {
+      const cabinet = getStoredCabinet();
+      const mayor = getStoredMayor();
+      try {
+        const response = await fetch(`${API_BASE_URL}/api_media.php`);
+        const result = await response.json();
+        const assets = result.success
+          ? result.data.reduce((map: Record<string, string>, asset: any) => {
+              map[asset.asset_key] = asset.image;
+              return map;
+            }, {})
+          : {};
+        const profiles = result.success
+          ? result.government.reduce((map: Record<string, any>, profile: any) => {
+              map[profile.asset_key] = profile;
+              return map;
+            }, {})
+          : {};
+        const imageUrl = (image: string) => image.startsWith('http') ? image : `${API_BASE_URL}/${image}`;
+
+        setCabinetMembers(cabinet.map((member, index) => ({
+          ...member,
+          ...(profiles[member.id] || {}),
+          image: profiles[member.id]?.image ? imageUrl(profiles[member.id].image) : (assets[member.id] ? imageUrl(assets[member.id]) : member.image),
+          desk: profiles[member.id]?.task ? { en: profiles[member.id].task, om: profiles[member.id].task, am: profiles[member.id].task } : member.desk
+        })));
+        setMayorInfo({
+          ...mayor,
+          ...(profiles.mayor || {}),
+          image: profiles.mayor?.image ? imageUrl(profiles.mayor.image) : (assets.mayor ? imageUrl(assets.mayor) : mayor.image),
+          desk: profiles.mayor?.task ? { en: profiles.mayor.task, om: profiles.mayor.task, am: profiles.mayor.task } : mayor.desk
+        });
+      } catch (error) {
+        console.error('Error fetching government images:', error);
+        setCabinetMembers(cabinet);
+        setMayorInfo(mayor);
+      }
+    };
+
+    loadGovernmentImages();
   }, []);
 
   useEffect(() => {
@@ -221,7 +261,7 @@ export default function DepartmentsView({ currentLang, initialSubTab, onSubTabCh
               <p className="text-xs text-brand-green-750 font-semibold font-mono mt-0.5">{mayorInfo?.email || "mayor@agarocity.gov.et"}</p>
             </div>
             <div className="pt-4 border-t border-slate-200 w-full text-xs text-slate-500 space-y-1.5 font-mono">
-              <p>📍 Admin Block, 1st Floor</p>
+              <p>📍 {mayorInfo?.location || 'Admin Block, 1st Floor'}</p>
               <p>⏱️ Term: {mayorInfo?.term?.[currentLang] || (currentLang === 'en' ? '2022 - present' : '2022 - Amma')}</p>
             </div>
           </div>
@@ -287,6 +327,7 @@ export default function DepartmentsView({ currentLang, initialSubTab, onSubTabCh
                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 text-xs text-slate-650 space-y-1">
                   <span className="block text-[8.5px] font-bold text-slate-400 uppercase tracking-widest">Portfolio Desk</span>
                   <p className="font-bold text-slate-750 truncate">{member.desk[currentLang]}</p>
+                  <p className="text-[10.5px] text-slate-500 truncate">📍 {member.location || 'City Administration Office'}</p>
                   <p className="text-[10.5px] text-[#ca8a04] hover:underline font-mono truncate">{member.email}</p>
                 </div>
               </div>

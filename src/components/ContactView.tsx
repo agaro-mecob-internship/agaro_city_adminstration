@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Share2, MessageSquare, Clock, Send, ShieldCheck, Landmark } from 'lucide-react';
 import { Language } from '../types';
 
+const API_BASE_URL = 'http://localhost/agaro/php_export';
+
 interface ContactViewProps {
   currentLang: Language;
 }
@@ -9,6 +11,8 @@ interface ContactViewProps {
 export default function ContactView({ currentLang }: ContactViewProps) {
   const [formInputs, setFormInputs] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const loc = {
     title: {
@@ -65,17 +69,40 @@ export default function ContactView({ currentLang }: ContactViewProps) {
       en: 'Monday - Friday (8:30 AM - 5:30 PM)',
       om: 'Wiixata - Jimaata (Saa\'atii 2:30 - 11:30)',
       am: 'ከሰኞ እስከ አርብ (ከጠዋቱ 2:30 እስከ 11:30 ሰዓት)'
+    },
+    submitError: {
+      en: 'We could not send your message. Please try again.',
+      om: 'Ergaa keessan erguu hin dandeenye. Maaloo irra deebi\'aa yaalaa.',
+      am: 'መልእክትዎን መላክ አልተቻለም። እባክዎ እንደገና ይሞክሩ።'
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formInputs.name || !formInputs.message) return;
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/submit_feedback.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formInputs)
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Unable to submit feedback');
+      }
+
+      setSubmitted(true);
       setFormInputs({ name: '', phone: '', email: '', subject: '', message: '' });
-    }, 4000);
+    } catch (error) {
+      console.error('Error submitting contact feedback:', error);
+      setSubmitError(loc.submitError[currentLang]);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const KEBELE_CONTACTS = [
@@ -239,11 +266,15 @@ export default function ContactView({ currentLang }: ContactViewProps) {
               <button
                 id="btn-contact-submit"
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-green-700 text-white font-semibold py-2.5 px-4 text-sm shadow-xs hover:bg-brand-green-800 transition-colors cursor-pointer"
               >
                 <Send className="h-4 w-4" />
-                {loc.submitBtn[currentLang]}
+                {isSubmitting ? 'Sending...' : loc.submitBtn[currentLang]}
               </button>
+              {submitError && (
+                <p role="alert" className="text-sm text-red-600 text-center">{submitError}</p>
+              )}
             </form>
           )}
         </div>

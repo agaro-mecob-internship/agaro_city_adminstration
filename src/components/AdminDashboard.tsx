@@ -65,6 +65,10 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [mediaItems, setMediaItems] = useState<any[]>([]);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [mediaTarget, setMediaTarget] = useState('gallery-1');
+  const [governmentForm, setGovernmentForm] = useState({ name: '', task: '', location: '', email: '' });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [formData, setFormData] = useState({
     title_en: '', title_om: '', title_am: '',
@@ -423,6 +427,33 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
     fetchData();
   }, [activeSection]);
 
+  useEffect(() => {
+    if (activeMenuItem !== 'galleries') return;
+    const fetchMedia = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api_media.php`);
+        const result = await response.json();
+        setMediaItems(result.success ? [...(result.data || []), ...(result.government || [])] : []);
+      } catch (error) {
+        console.error('Error fetching media:', error);
+        setMediaItems([]);
+      }
+    };
+    fetchMedia();
+  }, [activeMenuItem]);
+
+  useEffect(() => {
+    const profile = mediaItems.find((item) => item.asset_key === mediaTarget);
+    if (mediaTarget === 'mayor' || mediaTarget.startsWith('cab-')) {
+      setGovernmentForm({
+        name: profile?.name || '',
+        task: profile?.task || '',
+        location: profile?.location || '',
+        email: profile?.email || ''
+      });
+    }
+  }, [mediaTarget, mediaItems]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -612,6 +643,10 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
       resetForm();
     } else if (itemId === 'projects') {
       setActiveSection('projects');
+      setShowForm(false);
+      setEditingItem(null);
+      resetForm();
+    } else if (itemId === 'galleries') {
       setShowForm(false);
       setEditingItem(null);
       resetForm();
@@ -980,6 +1015,88 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
     );
   };
 
+  const renderMediaManager = () => {
+    const mediaOptions = [
+      ...Array.from({ length: 6 }, (_, index) => ({ key: `gallery-${index + 1}`, label: `Gallery image ${index + 1}` })),
+      { key: 'mayor', label: 'City administrator / Mayor' },
+      ...Array.from({ length: 5 }, (_, index) => ({ key: `cab-${index + 1}`, label: `Cabinet member ${index + 1}` })),
+      { key: 'mesob-center', label: 'Agaro Mesob Center administrator' },
+      { key: 'services-leader-1', label: 'Services leadership: Ato Kemal Jemal' },
+      { key: 'services-leader-2', label: 'Services leadership: Dr. Chaltu Gemeda' }
+    ];
+    const currentAsset = mediaItems.find((item) => item.asset_key === mediaTarget);
+    const isGovernmentTarget = mediaTarget === 'mayor' || mediaTarget.startsWith('cab-') || mediaTarget === 'mesob-center' || mediaTarget.startsWith('services-leader-');
+
+    const handleMediaUpload = async (event: React.FormEvent) => {
+      event.preventDefault();
+      if (!mediaFile && !isGovernmentTarget) return;
+      setLoading(true);
+      setMessage(null);
+      try {
+        const data = new FormData();
+        data.append('asset_key', mediaTarget);
+        if (mediaFile) data.append('image_file', mediaFile);
+        if (isGovernmentTarget) {
+          data.append('name', governmentForm.name);
+          data.append('task', governmentForm.task);
+          data.append('location', governmentForm.location);
+          data.append('email', governmentForm.email);
+        }
+        const response = await fetch(`${API_BASE_URL}/api_media.php`, { method: 'POST', body: data });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || 'Upload failed');
+        setMessage({ type: 'success', text: 'Image updated successfully.' });
+        setMediaItems((current) => [
+          ...current.filter((item) => item.asset_key !== mediaTarget),
+          { asset_key: mediaTarget, image: result.image, ...governmentForm }
+        ]);
+        setMediaFile(null);
+      } catch (error) {
+        console.error('Error uploading media:', error);
+        setMessage({ type: 'error', text: 'Unable to upload image.' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Gallery & Government Images</h2>
+          <p className="text-sm text-gray-600 mt-1">Replace public gallery and city administration cabinet images.</p>
+        </div>
+        {message && (
+          <div className={`p-4 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+            {message.type === 'success' ? <Check className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+            {message.text}
+          </div>
+        )}
+        <form onSubmit={handleMediaUpload} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+          <label className="block text-sm font-medium text-gray-700">Image location</label>
+          <select value={mediaTarget} onChange={(event) => setMediaTarget(event.target.value)} className="w-full p-2 border rounded-lg">
+            {mediaOptions.map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}
+          </select>
+          {currentAsset?.image && (
+            <img src={`${API_BASE_URL}/${currentAsset.image}`} alt="Current media" className="h-32 w-48 rounded-lg object-cover border" />
+          )}
+          {isGovernmentTarget && (
+            <div className="grid gap-3 md:grid-cols-2">
+              <input type="text" required placeholder="Full name" value={governmentForm.name} onChange={(event) => setGovernmentForm({ ...governmentForm, name: event.target.value })} className="p-2 border rounded-lg" />
+              <input type="email" placeholder="Email" value={governmentForm.email} onChange={(event) => setGovernmentForm({ ...governmentForm, email: event.target.value })} className="p-2 border rounded-lg" />
+              <input type="text" required placeholder="Main task / portfolio" value={governmentForm.task} onChange={(event) => setGovernmentForm({ ...governmentForm, task: event.target.value })} className="p-2 border rounded-lg" />
+              <input type="text" required placeholder="Office location" value={governmentForm.location} onChange={(event) => setGovernmentForm({ ...governmentForm, location: event.target.value })} className="p-2 border rounded-lg" />
+            </div>
+          )}
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" required={!isGovernmentTarget} onChange={(event) => setMediaFile(event.target.files?.[0] || null)} className="block w-full text-sm text-gray-500" />
+          <button type="submit" disabled={(!mediaFile && !isGovernmentTarget) || loading} className="flex items-center gap-2 px-5 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 disabled:opacity-50">
+            <Save className="h-4 w-4" />
+            {loading ? 'Uploading...' : 'Upload image'}
+          </button>
+        </form>
+      </div>
+    );
+  };
+
   // Render sidebar
   const renderSidebar = () => {
     return (
@@ -1202,6 +1319,8 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
 
           {/* Content Management Section */}
           <div className="mt-6">
+            {activeMenuItem === 'galleries' ? renderMediaManager() : (
+              <>
             {/* Section Navigation */}
             <div className="flex flex-wrap gap-2 mb-4">
               {['news', 'events', 'projects'].map((section) => (
@@ -1292,6 +1411,8 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
               </div>
               {renderItems()}
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -206,7 +206,7 @@ export default function ProjectsView({ currentLang }: ProjectsViewProps) {
           </div>
           <div>
             <span className="block text-2xl font-display font-bold text-slate-800">
-              {stats.totalBudget}
+              Total Funding
             </span>
             <span className="text-xs text-slate-400 font-medium">Total Active Funding Pool</span>
           </div>
@@ -356,16 +356,16 @@ export default function ProjectsView({ currentLang }: ProjectsViewProps) {
                     {/* Budget and details footer */}
                     <div className="h-px bg-slate-150 my-4" />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-0.5">
+                    <div className="grid grid-cols-2 gap-4 min-w-0">
+                      <div className="space-y-0.5 min-w-0">
                         <span className="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">
                           {dict.budgetLabel[currentLang]}
                         </span>
-                        <span className="block text-sm font-bold text-slate-800 font-mono-muted">
-                          {proj.budget || 'N/A'}
+                        <span className="block text-sm font-bold text-slate-800 font-mono-muted break-all leading-5">
+                          Total Funding
                         </span>
                       </div>
-                      <div className="space-y-0.5">
+                      <div className="space-y-0.5 min-w-0">
                         <span className="block text-[10px] uppercase tracking-wider text-slate-400 font-medium">
                           {dict.managerLabel[currentLang]}
                         </span>

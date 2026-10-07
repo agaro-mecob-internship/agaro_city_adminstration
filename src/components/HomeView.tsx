@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { DICTIONARY } from '../data';
 import { getStoredMayor } from '../dataStore';
 import { Language } from '../types';
+import ContactView from './ContactView';
+import ProjectsView from './ProjectsView';
 import {
   Building,
   MapPin,
@@ -48,6 +50,7 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
   const [mayorInfo, setMayorInfo] = useState<any>(null);
   const [latestNews, setLatestNews] = useState<any[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [mediaAssets, setMediaAssets] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const stats = [
@@ -113,6 +116,34 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
 
   useEffect(() => {
     setMayorInfo(getStoredMayor());
+  }, []);
+
+  useEffect(() => {
+    const fetchMediaAssets = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api_media.php`);
+        const result = await response.json();
+        if (result.success) {
+          const assets = result.data.reduce((map: Record<string, string>, asset: any) => {
+            map[asset.asset_key] = getImageUrl(asset.image) || '';
+            return map;
+          }, {});
+          setMediaAssets(assets);
+          const mayorProfile = result.government?.find((profile: any) => profile.asset_key === 'mayor');
+          if (mayorProfile) {
+            setMayorInfo({
+              ...getStoredMayor(),
+              ...mayorProfile,
+              image: mayorProfile.image ? getImageUrl(mayorProfile.image) : assets.mayor || getStoredMayor().image
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching media assets:', error);
+      }
+    };
+
+    fetchMediaAssets();
   }, []);
 
   // Helper function to get image URL
@@ -204,37 +235,37 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
   const galleryImages = [
     {
       id: 1,
-      src: './src/assets/images/AGARO18.jpg',
+      src: mediaAssets['gallery-1'] || './src/assets/images/AGARO18.jpg',
       alt: { en: 'Agaro City Hall', om: 'Galma Kellaa Aggaaroo', am: 'አጋሮ ከተማ አስተዳደር' },
       caption: { en: 'City Hall Main Building', om: 'Galma Kellaa Magaalaa', am: 'ዋና የከተማው አስተዳደር ህንፃ' }
     },
     {
       id: 2,
-      src: './src/assets/images/AGARO11.jpg',
+      src: mediaAssets['gallery-2'] || './src/assets/images/AGARO11.jpg',
       alt: { en: 'Agaro Central Market', om: 'Gabaayya Giddu Galeessa', am: 'አጋሮ ማዕከላዊ ገበያ' },
       caption: { en: 'Bustling Central Market', om: 'Gabaayya Giddu Galeessa', am: 'የተጨናነቀ ማዕከላዊ ገበያ' }
     },
     {
       id: 3,
-      src: './src/assets/images/AGARO12.jpg',
+      src: mediaAssets['gallery-3'] || './src/assets/images/AGARO12.jpg',
       alt: { en: 'Coffee Processing Center', om: 'Qaboo Buna', am: 'ቡና ማቀነባበሪያ ማእከል' },
       caption: { en: 'Modern Coffee Processing Facility', om: 'Qaboo Buna Faayidaa', am: 'ዘመናዊ የቡና ማቀነባበሪያ ፋብሪካ' }
     },
     {
       id: 4,
-      src: './src/assets/images/AGARO15.jpg',
+      src: mediaAssets['gallery-4'] || './src/assets/images/AGARO15.jpg',
       alt: { en: 'Road Construction Project', om: 'Waanummii Daandii', am: 'የመንገድ ግንባታ ፕሮጀክት' },
       caption: { en: 'Asphalt Road Development', om: 'Daandii Asphaltii', am: 'አስፋልት መንገድ ግንባታ' }
     },
     {
       id: 5,
-      src: './src/assets/images/AGARO10.jpg',
+      src: mediaAssets['gallery-5'] || './src/assets/images/AGARO10.jpg',
       alt: { en: 'Sports Stadium', om: 'Istaadiyeemii', am: 'ስታዲየም' },
       caption: { en: 'Municipal Sports Complex', om: 'Istaadiyeemii Magaalaa', am: 'የስፖርት ስታዲየም' }
     },
     {
       id: 6,
-      src: './src/assets/images/AGARO14.jpg',
+      src: mediaAssets['gallery-6'] || './src/assets/images/AGARO14.jpg',
       alt: { en: 'Agaro Cityscape', om: 'Magaala Agaaro', am: 'የአጋሮ ከተማ እይታ' },
       caption: { en: 'Scenic City View', om: 'Mulʼata Magaalaa', am: 'የከተማ እይታ' }
     }
@@ -355,8 +386,8 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
           <div className="md:col-span-4 bg-slate-50 border-r border-slate-150 p-8 flex flex-col items-center justify-center text-center space-y-5">
             <div className="h-36 w-36 rounded-full overflow-hidden border-[3.5px] border-brand-gold-500 flex items-center justify-center shadow-md bg-white animate-fade-in">
               <img
-                src="./src/assets/images/NAZIF.jpg"
-                alt="Mr. Nezif"
+                src={mayorInfo?.image || './src/assets/images/NAZIF.jpg'}
+                alt={mayorInfo?.name || 'City Administrator'}
                 className="h-full w-full object-cover object-top hover:scale-105 transition-transform duration-300"
                 referrerPolicy="no-referrer"
               />
@@ -365,12 +396,12 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                 {currentLang === 'en' ? 'Honorary Mayor' : currentLang === 'om' ? 'Kantiibaa Kabajaa Magaalaa' : 'የክብር ከንቲባ'}
               </span>
-              <h2 className="font-display text-xl font-bold text-slate-800 mt-1">Mr. Nezif</h2>
-              <p className="text-xs text-brand-green-750 font-semibold font-mono mt-0.5">mayor@agarocity.gov.et</p>
+                <h2 className="font-display text-xl font-bold text-slate-800 mt-1">{mayorInfo?.name || 'Mr. Nezif'}</h2>
+                <p className="text-xs text-brand-green-750 font-semibold font-mono mt-0.5">{mayorInfo?.email || 'mayor@agarocity.gov.et'}</p>
             </div>
             <div className="pt-4 border-t border-slate-200 w-full text-xs text-slate-500 space-y-1.5 font-mono">
-              <p>📍 Admin Block, 1st Floor</p>
-              <p>⏱️ Term: {currentLang === 'en' ? '2022 - present' : '2022 - Amma'}</p>
+              <p>📍 {mayorInfo?.location || 'Admin Block, 1st Floor'}</p>
+              <p>⏱️ Term: {mayorInfo?.term?.[currentLang] || (currentLang === 'en' ? '2022 - present' : '2022 - Amma')}</p>
             </div>
           </div>
 
@@ -379,11 +410,11 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
               <span className="text-xs font-bold text-brand-gold-700 uppercase bg-brand-gold-100/50 border border-brand-gold-200/50 px-2.5 py-1 rounded-md">Municipal Strategy</span>
               <h3 className="font-display text-2xl font-bold text-slate-800 tracking-tight">Executive Address & Mandate</h3>
               <p className="text-slate-650 text-sm leading-relaxed">
-                {currentLang === 'en'
+                {mayorInfo?.task || (currentLang === 'en'
                   ? "Under the Oromia Regional Government framework, the Mayor drives civic development, infrastructure expansion, and digital e-governance solutions to establish Agaro as southwestern Ethiopia's premier industrial coffee and commercial hub."
                   : currentLang === 'om'
                   ? "Bulchiinsa Mootummaa Naannoo Oromiyaa jalatti, Kantiibaan haaraa dhimma guddina magaalaa, misooma bu'uraalee, fi tajaajila dijiitaalaa saffisiisanii Agaro giddugala daldalaa bunaa ol'aanaa gochuuf hojjetu."
-                  : 'በኦሮሚያ ክልላዊ መንግሥት መዋቅር ሥር፣ ከንቲባው የከተማ ዕድገትን፣ የመሠረተ ልማት ዝርጋታን እና የዲጂታል አስተዳደርን በማቀናጀት አጋሮን በደቡብ ምዕራብ ኢትዮጵያ ዋነኛ የቡና እና የኢኮኖሚ ማዕከል ለማድረግ እየሰሩ ይገኛሉ።'}
+                  : 'በኦሮሚያ ክልላዊ መንግሥት መዋቅር ሥር፣ ከንቲባው የከተማ ዕድገትን፣ የመሠረተ ልማት ዝርጋታን እና የዲጂታል አስተዳደርን በማቀናጀት አጋሮን በደቡብ ምዕራብ ኢትዮጵያ ዋና የቡና እና የኢኮኖሚ ማዕከል ለማድረግ እየሰሩ ይገኛሉ።')}
               </p>
             </div>
 
@@ -511,84 +542,84 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
         <div className="absolute w-72 h-72 rounded-full bg-green-600/20 blur-3xl top-20 left-20"></div>
         <div className="absolute w-96 h-96 rounded-full bg-yellow-500/10 blur-3xl bottom-10 right-20"></div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        <div className="relative z-10 max-w-7xl mx-auto px-5 py-12 sm:px-8 sm:py-14">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-green-700 px-4 py-2 rounded-full text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 bg-green-700 px-4 py-2 rounded-full text-sm font-semibold">
               <BarChart3 size={14} />
               Progress & Achievements
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black mt-6">
+            <h1 className="text-3xl sm:text-4xl font-black mt-6 leading-tight">
               Agaro City{" "}
               <span className="text-yellow-400">By The Numbers</span>
             </h1>
-            <p className="text-green-100 text-sm.5 max-w-2xl mx-auto mt-4 leading-relaxed">
+            <p className="text-green-100 text-base max-w-2xl mx-auto mt-4 leading-7">
               Discover the impact of our initiatives and the progress we've made
               together in building a prosperous community.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-2 gap-4 mt-10">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-10">
             {stats.map((item, index) => {
               const Icon = item.icon;
               return (
                 <div
                   key={index}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center backdrop-blur-md hover:-translate-y-1.5 hover:bg-white/10 duration-300 shadow-md"
+                  className="bg-white/10 border border-white/15 rounded-2xl p-5 sm:p-6 min-h-36 lg:min-h-40 flex flex-col items-center justify-center text-center backdrop-blur-md hover:-translate-y-1.5 hover:bg-white/15 duration-300 shadow-md"
                 >
                   <Icon size={32} className={`${item.color} mx-auto mb-4`} />
-                  <h2 className="text-2xl font-black">{item.value}</h2>
-                  <p className="text-green-100 mt-2 text-xs.5">{item.title}</p>
+                  <h2 className="text-2xl sm:text-3xl font-black leading-tight">{item.value}</h2>
+                  <p className="text-green-100 mt-2 text-sm leading-5">{item.title}</p>
                 </div>
               );
             })}
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 mt-16">
+          <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-10 lg:gap-14 mt-16">
             <div>
-              <div className="inline-flex bg-green-700 rounded-full px-4 py-2 text-xs font-semibold">
+              <div className="inline-flex bg-green-700 rounded-full px-4 py-2 text-sm font-semibold">
                 Recent Achievements
               </div>
-              <h2 className="text-3xl font-black mt-4 leading-snug">
+              <h2 className="text-3xl sm:text-4xl font-black mt-4 leading-tight">
                 Recognized{" "}
                 <span className="text-yellow-400">Excellence</span>{" "}
                 in Public Service
               </h2>
-              <p className="text-green-100 mt-4 text-sm leading-relaxed">
+              <p className="text-green-100 mt-4 text-base leading-7">
                 Our commitment to innovation, transparency and community
                 development has been recognized through numerous awards
                 and achievements at regional and national levels.
               </p>
-              <div className="grid grid-cols-2 gap-6 mt-8">
-                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <div className="grid grid-cols-2 gap-3 mt-8">
+                <div className="bg-white/10 rounded-2xl p-5 sm:p-6 border border-white/15">
                   <h3 className="text-yellow-400 text-3xl font-black">98%</h3>
-                  <p className="text-green-100 mt-1.5 text-xs.5">Citizen Satisfaction</p>
+                  <p className="text-green-100 mt-1.5 text-sm leading-5">Citizen Satisfaction</p>
                 </div>
-                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <div className="bg-white/10 rounded-2xl p-5 sm:p-6 border border-white/15">
                   <h3 className="text-yellow-400 text-3xl font-black">47%</h3>
-                  <p className="text-green-100 mt-1.5 text-xs.5">Digital Service Adoption</p>
+                  <p className="text-green-100 mt-1.5 text-sm leading-5">Digital Service Adoption</p>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {achievements.map((item, index) => {
                 const Icon = item.icon;
                 return (
                   <div
                     key={index}
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/10 duration-300"
+                    className="relative bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 hover:bg-white/15 duration-300 min-h-[220px]"
                   >
-                    <div className="flex justify-between items-start gap-4">
-                      <div className="flex gap-4">
-                        <div className="bg-green-700 rounded-xl p-3 h-fit shrink-0">
-                          <Icon className="text-yellow-400" size={24} />
+                    <div className="flex items-start gap-4 pr-12">
+                      <div className="flex flex-col gap-4 h-full">
+                        <div className="bg-green-700 rounded-xl p-3 h-fit w-fit shrink-0">
+                          <Icon className="text-yellow-400" size={22} />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold">{item.title}</h3>
-                          <p className="text-green-100 mt-1.5 text-xs.5 leading-relaxed">{item.text}</p>
+                          <h3 className="text-base font-bold leading-6">{item.title}</h3>
+                          <p className="text-green-100 mt-1.5 text-sm leading-6">{item.text}</p>
                         </div>
                       </div>
-                      <div className="bg-yellow-400 text-green-900 rounded-full h-fit px-3 py-1 font-bold text-xs.5 shrink-0">
+                      <div className="absolute top-5 right-5 bg-yellow-400 text-green-900 rounded-full px-3 py-1 font-bold text-sm shrink-0">
                         {item.year}
                       </div>
                     </div>
@@ -795,6 +826,12 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
           </div>
         </div>
       </div>
+
+      {/* Projects Section */}
+      <ProjectsView currentLang={currentLang} />
+
+      {/* Contact Section */}
+      <ContactView currentLang={currentLang} />
     </div>
   );
 }

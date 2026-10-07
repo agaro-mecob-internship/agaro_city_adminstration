@@ -6,7 +6,7 @@ import ServicesView from './components/ServicesView';
 import DepartmentsView from './components/DepartmentsView';
 import NewsEventsView from './components/NewsEventsView';
 import ProjectsView from './components/ProjectsView';
-//import ContactView from './components/ContactView';
+import ContactView from './components/ContactView';
 import LoginView from './components/LoginView';
 import AdminDashboard from './components/AdminDashboard';
 import ChatbotWidget from './components/ChatbotWidget';
@@ -48,7 +48,7 @@ function App() {
     { id: 'departments', label: 'Government', icon: Building2 },
     { id: 'news', label: 'News & Events', icon: Newspaper },
     { id: 'projects', label: 'Projects', icon: ClipboardList },
-    //{ id: 'contact', label: 'Contact', icon: Mail },
+    { id: 'contact', label: 'Contact', icon: Mail },
     //{ id: 'login', label: 'Admin Login', icon: LogIn },
   ];
 
@@ -120,8 +120,8 @@ function App() {
         return <NewsEventsView currentLang={currentLang}  />;
       case 'projects':
         return <ProjectsView currentLang={currentLang} />;
-      //case 'contact':
-       // return <ContactView currentLang={currentLang} />;
+      case 'contact':
+        return <ContactView currentLang={currentLang} />;
       case 'login':
         return <LoginView currentLang={currentLang} onLogin={handleLogin} />;
       case 'admin':

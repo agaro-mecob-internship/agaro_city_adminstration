@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Language } from '../types';
 import { 
   MapPin, Phone, Mail, Clock, Facebook, Twitter, Instagram, 
@@ -16,6 +16,8 @@ import {
 interface ServicesViewProps {
   currentLang: Language;
 }
+
+const API_BASE_URL = 'http://localhost/agaro/php_export';
 
 // Service data with requirements
 const servicesData = [
@@ -225,6 +227,31 @@ const iconMap: Record<string, any> = {
 export default function ServicesView({ currentLang }: ServicesViewProps) {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [serviceProfiles, setServiceProfiles] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    const loadServiceProfiles = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api_media.php`);
+        const result = await response.json();
+        if (result.success) {
+          setServiceProfiles((result.government || []).reduce((profiles: Record<string, any>, profile: any) => {
+            profiles[profile.asset_key] = profile;
+            return profiles;
+          }, {}));
+        }
+      } catch (error) {
+        console.error('Error loading service profiles:', error);
+      }
+    };
+
+    loadServiceProfiles();
+  }, []);
+
+  const getServiceImage = (key: string, fallback: string) => {
+    const image = serviceProfiles[key]?.image;
+    return image ? (image.startsWith('http') ? image : `${API_BASE_URL}/${image}`) : fallback;
+  };
 
   const dict = {
     title: {
@@ -418,13 +445,13 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
       am: 'ክፍል'
     },
     mayorTitle: {
-      en: 'HONORARY REGIONAL MAYOR',
+      en: 'Administrator, Agaro Mesob Center',
       om: 'KANTIIBAA KABAJAA NAANNOO',
       am: 'የክብር ክልላዊ ከንቲባ'
     },
     mayorName: {
-      en: 'Hon. Jemal Abasimel',
-      om: 'Kabajamaan Jemal Abasimel',
+      en: 'Mr. Nejib Abasimel',
+      om: 'Kabajamaan Nejib Abasimel',
       am: 'የክብር ጀማል አባሲመል'
     },
     mayorEmail: {
@@ -443,7 +470,7 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
       am: 'የስልጣን ጊዜ: 2022 - አሁን'
     },
     municipalStrategy: {
-      en: 'MUNICIPAL STRATEGY',
+      en: 'Administrator, Agaro Mesob Center',
       om: 'MISHOO MAGAALAA',
       am: 'የማዘጋጃ ቤት ስትራቴጂ'
     },
@@ -453,7 +480,7 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
       am: 'የስራ አስፈፃሚ ንግግር እና ተልዕኮ'
     },
     executiveDesc: {
-      en: 'Under the Oromia Regional Government framework, the Mayor drives civic development, infrastructure expansion, and digital e-governance solutions to establish Agaro as southwestern Ethiopia\'s premier industrial coffee and commercial hub.',
+      en: 'The Administrator provides leadership and coordination for the activities of Agaro Mesob Center, overseeing day-to-day operations, supporting organizational development, coordinating staff and services, and ensuring that the center effectively serves its intended community and institutional objectives.',
       om: 'Rimee Bulchiinsa Naannoo Oromiyaa jalatti, Kantiibaan guddina hawaasaa, misooma bu\'uraalee, fi furmaata e-governance dijitaalaa fayyadamuun Aggaaroo handhuura daldalaa bunaa fi daldalaa Oromiyaa lixaatti gochuuf hojjeta.',
       am: 'በኦሮሚያ ክልላዊ መንግሥት ማዕቀፍ ሥር፣ ከንቲባው የሲቪክ ልማትን፣ የመሠረተ ልማት መስፋፋትን እና የዲጂታል ኢ-መንግሥት መፍትሄዎችን በመምራት አጋሮን በደቡብ ምዕራብ ኢትዮጵያ ዋነኛ የኢንዱስትሪ ቡና እና የንግድ ማዕከል ለማድረግ ይሰራሉ።'
     },
@@ -463,17 +490,17 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
       am: 'ልዩ የአስተዳደር ስትራቴጂካዊ ቅድሚያ የሚሰጣቸው'
     },
     priority1: {
-      en: 'Expand high-yield coffee export value chains.',
+      en: 'Oversee the day-to-day administration, coordination, and effective operation of Agaro Mesob Center.',
       om: 'Sassabbiin oomisha bunaa olka\'aa babal\'isuu.',
       am: 'ከፍተኛ ምርት ያለውን የቡና ኤክስፖርት ሰንሰለት ማስፋት።'
     },
     priority2: {
-      en: 'Decentralize municipal support desks into 9 robust Kebeles.',
+      en: 'Coordinate center activities and services while supporting effective communication with community members and relevant stakeholders.',
       om: 'Damee deeggarsaa magaalaa gara 9 Kebeleelatti babal\'isuu.',
       am: 'የማዘጋጃ ቤት ድጋፍ ቢሮዎችን ወደ 9 ጠንካራ ቀበሌዎች ማውረድ።'
     },
     priority3: {
-      en: 'Achieve 100% electronic billing and rapid public works response.',
+      en: 'Support strategic planning, resource management, partnerships, and initiatives that contribute to the sustainable development of the center.',
       om: 'Bilbila elektooroniikii 100% fi deebii hojii hawaasaa saffisaa argachuu.',
       am: '100% የኤሌክትሮኒክ ቢል አሰጣጥ እና ፈጣን የህዝብ ሥራ ምላሽ ማሳካት።'
     },
@@ -608,7 +635,6 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
 
           <div className="row g-3">
             {servicesData.map((service) => {
-              const queueColor = getQueueColor(service.queue);
               return (
                 <div key={service.id} className="col-md-3 col-sm-6">
                   <div 
@@ -635,9 +661,6 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
                         {getIcon(service.icon)}
                       </div>
                       <h5 className="card-title fw-bold" style={{ fontSize: '0.85rem' }}>{service.name}</h5>
-                      <span className={`badge ${getQueueBadgeClass(service.queue)} px-3 py-2 fw-semibold`}>
-                        {dict.queue[currentLang]}: {service.queue}
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -666,13 +689,6 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
               </div>
             </div>
             
-            {/* Queue Status */}
-            <div className={`d-inline-flex align-items-center gap-3 px-4 py-2 rounded-pill ${selectedService.queue === 0 ? 'bg-success bg-opacity-10 text-success' : selectedService.queue <= 2 ? 'bg-warning bg-opacity-10 text-warning' : 'bg-danger bg-opacity-10 text-danger'}`}>
-              <span className="fw-bold">{dict.currentQueue[currentLang]}</span>
-              <span className="fs-3 fw-bold">{selectedService.queue}</span>
-              <span className="badge bg-white bg-opacity-50 text-dark">{getQueueLabel(selectedService.queue)}</span>
-            </div>
-
             {/* Ticket Number */}
             <div className="mt-3 p-3 bg-brand-green-50 rounded-3 border border-brand-green-200">
               <div className="d-flex align-items-center gap-2">
@@ -829,15 +845,15 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
                   <div className="col-md-4 text-center">
                     <div className="rounded-circle overflow-hidden mx-auto" style={{ width: '180px', height: '180px', border: '4px solid #ca8a04' }}>
                       <img 
-                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256" 
-                        alt="Mayor" 
+                        src={getServiceImage('mesob-center', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256')} 
+                        alt={serviceProfiles['mesob-center']?.name || 'Mayor'} 
                         className="w-100 h-100 object-cover"
                       />
                     </div>
-                    <h3 className="fw-bold mt-3" style={{ color: '#0e2f44' }}>{dict.mayorName[currentLang]}</h3>
-                    <p className="text-muted small">{dict.mayorEmail[currentLang]}</p>
+                    <h3 className="fw-bold mt-3" style={{ color: '#0e2f44' }}>{serviceProfiles['mesob-center']?.name || dict.mayorName[currentLang]}</h3>
+                    <p className="text-muted small">{serviceProfiles['mesob-center']?.email || dict.mayorEmail[currentLang]}</p>
                     <div className="mt-2">
-                      <p className="mb-1 text-sm"><MapPin className="d-inline me-1 text-brand-gold-500" size={14} /> {dict.mayorAddress[currentLang]}</p>
+                      <p className="mb-1 text-sm"><MapPin className="d-inline me-1 text-brand-gold-500" size={14} /> {serviceProfiles['mesob-center']?.location || dict.mayorAddress[currentLang]}</p>
                       <p className="mb-0 text-sm"><Clock className="d-inline me-1 text-brand-gold-500" size={14} /> {dict.mayorTerm[currentLang]}</p>
                     </div>
                   </div>
@@ -925,14 +941,14 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
                 <div className="d-flex gap-3">
                   <div className="rounded-circle overflow-hidden flex-shrink-0" style={{ width: '70px', height: '70px', border: '3px solid #ca8a04' }}>
                     <img 
-                      src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256" 
-                      alt="Ato Kemal Jemal" 
+                        src={getServiceImage('services-leader-1', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256')} 
+                        alt={serviceProfiles['services-leader-1']?.name || 'Ato Kemal Jemal'} 
                       className="w-100 h-100 object-cover"
                     />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-0" style={{ color: '#0e2f44' }}>Ato Kemal Jemal</h5>
-                    <span className="badge bg-green-700 text-white fw-semibold px-2 py-1" style={{ fontSize: '10px' }}>MAYOR & ADMINISTRATIVE HEAD</span>
+                    <h5 className="fw-bold mb-0" style={{ color: '#0e2f44' }}>{serviceProfiles['services-leader-1']?.name || 'Ato Kemal Jemal'}</h5>
+                    <span className="badge bg-green-700 text-white fw-semibold px-2 py-1" style={{ fontSize: '10px' }}>{serviceProfiles['services-leader-1']?.task || 'MAYOR & ADMINISTRATIVE HEAD'}</span>
                     <p className="text-muted small mt-2 mb-0">Directs the strategic direction, leads the city council, and oversees all physical municipal renovations and governance programs.</p>
                     <div className="mt-2 d-flex align-items-center gap-2">
                       <span className="text-xs text-muted">Verified Administrator</span>
@@ -949,14 +965,14 @@ export default function ServicesView({ currentLang }: ServicesViewProps) {
                 <div className="d-flex gap-3">
                   <div className="rounded-circle overflow-hidden flex-shrink-0" style={{ width: '70px', height: '70px', border: '3px solid #ca8a04' }}>
                     <img 
-                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256" 
-                      alt="Dr. Chaltu Gemeda" 
+                        src={getServiceImage('services-leader-2', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256')} 
+                        alt={serviceProfiles['services-leader-2']?.name || 'Dr. Chaltu Gemeda'} 
                       className="w-100 h-100 object-cover"
                     />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-0" style={{ color: '#0e2f44' }}>Dr. Chaltu Gemeda</h5>
-                    <span className="badge bg-green-700 text-white fw-semibold px-2 py-1" style={{ fontSize: '10px' }}>DEPUTY MAYOR & SOCIAL LEAD</span>
+                    <h5 className="fw-bold mb-0" style={{ color: '#0e2f44' }}>{serviceProfiles['services-leader-2']?.name || 'Dr. Chaltu Gemeda'}</h5>
+                    <span className="badge bg-green-700 text-white fw-semibold px-2 py-1" style={{ fontSize: '10px' }}>{serviceProfiles['services-leader-2']?.task || 'DEPUTY MAYOR & SOCIAL LEAD'}</span>
                     <p className="text-muted small mt-2 mb-0">Coordinates community programs, healthcare clinics, educational standards, and environmental protection projects.</p>
                     <div className="mt-2 d-flex align-items-center gap-2">
                       <span className="text-xs text-muted">Verified Administrator</span>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, MapPin, Award, Navigation, Leaf, Landmark, Target, Users, ArrowRight, Star } from 'lucide-react';
+import { MapPin, Award, Navigation, Leaf, Landmark, Target, ArrowRight, Star } from 'lucide-react';
 import { Language } from '../types';
 
 interface AboutViewProps {
@@ -16,15 +16,15 @@ const STATS = [
 ];
 
 export default function AboutView({ currentLang, initialSubTab, onSubTabChange }: AboutViewProps) {
-  const [activeTab, setActiveTab] = useState<'history' | 'leadership' | 'structure' | 'vision'>('history');
+  const [activeTab, setActiveTab] = useState<'history' | 'structure' | 'vision'>('history');
 
   useEffect(() => {
-    if (initialSubTab && ['history', 'leadership', 'structure', 'vision'].includes(initialSubTab)) {
+    if (initialSubTab && ['history', 'structure', 'vision'].includes(initialSubTab)) {
       setActiveTab(initialSubTab as any);
     }
   }, [initialSubTab]);
 
-  const handleTabChange = (tab: 'history' | 'leadership' | 'structure' | 'vision') => {
+  const handleTabChange = (tab: 'history' | 'structure' | 'vision') => {
     setActiveTab(tab);
     if (onSubTabChange) {
       onSubTabChange(tab);
@@ -47,11 +47,6 @@ export default function AboutView({ currentLang, initialSubTab, onSubTabChange }
       om: 'Seenaafi Teessuma',
       am: 'ታሪክና መገኛ'
     },
-    leadershipTab: {
-      en: 'Leadership',
-      om: 'Hoggansa Bulchiinsaa',
-      am: 'የአመራር አባላት'
-    },
     structureTab: {
       en: 'Structure',
       om: 'Caasaa Magaalaa',
@@ -63,39 +58,6 @@ export default function AboutView({ currentLang, initialSubTab, onSubTabChange }
       am: 'ራዕይና ተልዕኮ'
     }
   };
-
-  const ADMIN_TEAM = [
-    { 
-      name: 'Ato Kemal Jemal', 
-      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256',
-      role: { en: 'Mayor & Administrative Head', om: 'Kantiibaa Magaalaa', am: 'ከንቲባ እና የአስተዳደር ኃላፊ' }, 
-      desc: { 
-        en: 'Directs the strategic direction, leads the city council, and oversees all physical municipal renovations and governance programs.', 
-        om: 'Irgamtoota hunda kan hordofuu, komishinii magaalaa ol-aanaafi marii kabinee kan walitti qaban.', 
-        am: 'የከተማውን ስትራቴጂካዊ ልማት የሚመሩ፣ ምክር ቤቱን የሚመሩ እና የመሠረተ ልማት ግንባታዎችን በበላይነት የሚከታተሉ ከንቲባ።' 
-      } 
-    },
-    { 
-      name: 'Dr. Chaltu Gemeda', 
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
-      role: { en: 'Deputy Mayor & Social Lead', om: 'Itti-Aantuu Kantiibaa', am: 'ምክትል ከንቲባ እና የማህበራዊ ዘርፍ' }, 
-      desc: { 
-        en: 'Coordinates community programs, healthcare clinics, educational standards, and environmental protection projects.', 
-        om: 'Dhimmottan tajaajila hawaasummaa, barnootaa, fayyaafi eegumsa naannoo handhuura magaalaa kan qindeessan.', 
-        am: 'የማህበረሰብ ልማት ፕሮግራሞችን፣ ጤና ጣቢያዎችን፣ የትምህርት ጥራትን እና የአካባቢ ጥበቃ ሥራዎችን የሚያቀናጁ።' 
-      } 
-    },
-    { 
-      name: 'Ato Obsa Dejene', 
-      image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=256',
-      role: { en: 'Chief Land & Revenue Administrator', om: 'Hogganna Bulchiinsa Lafaa', am: 'የመሬት ልማት እና ገቢዎች መምሪያ ኃላፊ' }, 
-      desc: { 
-        en: 'Oversees municipal zoning permits, commercial construction approvals, property tax listings, and layout registers.', 
-        om: 'Ragaalee pilaanii magaalaa, handhuura ijaarsaa seera-qabeessaafi kaffaltii gibiraa kan hordofaniifi bulchan.', 
-        am: 'የከተማ ፕላን ፈቃዶችን፣ የንግድ ግንባታዎችን፣ የንብረት ግብር እና የከተማ ይዞታ ሰነዶችን የሚመሩ።' 
-      } 
-    }
-  ];
 
   return (
     <section id="about-section" className="space-y-12 py-6 font-sans">
@@ -136,19 +98,6 @@ export default function AboutView({ currentLang, initialSubTab, onSubTabChange }
             {contentDict.historyTab[currentLang]}
           </button>
           
-          <button
-            id="tab-about-leadership"
-            onClick={() => handleTabChange('leadership')}
-            className={`flex-1 min-w-[120px] inline-flex items-center justify-center gap-2 px-6 py-4 text-xs.5 font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'leadership'
-                ? 'border-brand-green-700 text-brand-green-700 bg-white shadow-inner-top'
-                : 'border-transparent text-slate-600 hover:text-brand-green-700 hover:bg-slate-100/40'
-            }`}
-          >
-            <Users className="h-4 w-4 shrink-0 text-brand-green-600" />
-            {contentDict.leadershipTab[currentLang]}
-          </button>
-
           <button
             id="tab-about-structure"
             onClick={() => handleTabChange('structure')}
@@ -272,73 +221,7 @@ export default function AboutView({ currentLang, initialSubTab, onSubTabChange }
             </div>
           )}
 
-          {/* 2. OUR LEADERSHIP TAB */}
-          {activeTab === 'leadership' && (
-            <div className="space-y-8">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-5">
-                <div>
-                  <h3 className="font-display text-2xl font-extrabold text-slate-800 tracking-tight">
-                    {currentLang === 'en' ? 'Municipal Executive Board' : currentLang === 'om' ? 'Koree Hojii-Raaajii Magaalaa' : 'የከተማው የስራ አስፈፃሚ ቦርድ'}
-                  </h3>
-                  <p className="text-sm text-slate-500 mt-1">
-                    {currentLang === 'en' ? 'Meet the public officers serving with transparency and devotion.' : currentLang === 'om' ? 'Hoggantoota hawaasa magaalaa keenyaaf tajaajila addaa kennan quunnamaa.' : 'ከተማችንን በታማኝነት እና በትጋት እያገለገሉ ካሉት መሪዎች ጋር ይገናኙ።'}
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-1.5 self-start bg-brand-gold-50 px-3 py-1 rounded-full text-brand-gold-700 text-xs font-semibold border border-brand-gold-100">
-                  <ShieldCheck className="h-4 w-4" />
-                  Term 2024 - 2029
-                </span>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6">
-                {ADMIN_TEAM.map((member, index) => (
-                  <div key={index} className="bg-slate-50 rounded-2xl border border-slate-150 p-6 flex flex-col justify-between hover:bg-white hover:shadow-md transition-all">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-full overflow-hidden border border-slate-200 shrink-0 bg-slate-100 flex items-center justify-center shadow-inner">
-                          <img 
-                            src={member.image} 
-                            alt={member.name} 
-                            className="h-full w-full object-cover object-top hover:scale-105 transition-transform duration-300" 
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-slate-800 text-sm.5">{member.name}</h4>
-                          <span className="block text-xs font-bold text-brand-green-750 uppercase tracking-wider mt-0.5">{member.role[currentLang]}</span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-slate-600 text-xs.5 leading-relaxed">
-                        {member.desc[currentLang]}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-slate-200/60 pt-4 mt-5 flex items-center justify-between text-xs font-mono text-slate-450">
-                      <span>Verified Administrator</span>
-                      <span className="text-[9px] bg-brand-green-50 text-brand-green-700 px-2 py-0.5 rounded-md font-bold">ACTIVE</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Integrity pledge card */}
-              <div className="bg-brand-coffee-900 text-white rounded-2xl p-6 flex flex-col md:flex-row gap-6 justify-between items-center select-none shadow-sm">
-                <div className="space-y-1 text-center md:text-left">
-                  <h4 className="font-display font-bold text-sm.5 text-brand-gold-400">Governance Integrity Pledge ({currentLang === 'en' ? 'Safuu' : currentLang === 'om' ? 'Duudhaa Safuu' : 'የአስተዳደር ስነ-ምግባር'})</h4>
-                  <p className="text-xs text-slate-350 max-w-xl">Every administrator commits to the historical legacy of the Jimma Zone, prioritizing resident care, ecological forestry protection, and anti-corruption frameworks.</p>
-                </div>
-                <div className="shrink-0 h-10 w-10 rounded-full border border-white/20 flex items-center justify-center text-lg bg-white/5">
-                  ☕
-                </div>
-              </div>
-
-            </div>
-          )}
-
-
-
-{/* 3. ORGANIZATIONAL STRUCTURE TAB - FIXED FOR DESKTOP */}
+          {/* 2. ORGANIZATIONAL STRUCTURE TAB */}
 {activeTab === 'structure' && (
   <div className="space-y-6">
     <div className="max-w-2xl">

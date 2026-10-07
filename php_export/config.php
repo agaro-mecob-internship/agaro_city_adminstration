@@ -82,6 +82,41 @@ function initializeTables($pdo) {
         INDEX idx_status (status),
         INDEX idx_kebele (kebele)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Contact feedback table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS contact_feedback (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        phone VARCHAR(50),
+        email VARCHAR(255),
+        subject VARCHAR(255),
+        message TEXT NOT NULL,
+        status ENUM('new', 'read', 'replied', 'archived') DEFAULT 'new',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_feedback_status (status),
+        INDEX idx_feedback_created_at (created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Gallery and government cabinet image overrides
+    $pdo->exec("CREATE TABLE IF NOT EXISTS media_assets (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        asset_key VARCHAR(50) NOT NULL UNIQUE,
+        asset_type ENUM('gallery', 'government') NOT NULL,
+        image VARCHAR(255) NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_media_type (asset_type)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Government office and cabinet details
+    $pdo->exec("CREATE TABLE IF NOT EXISTS government_profiles (
+        asset_key VARCHAR(50) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        task TEXT,
+        location VARCHAR(255),
+        email VARCHAR(255),
+        image VARCHAR(255),
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     
     // Insert sample data for projects if table is empty
     $checkStmt = $pdo->query("SELECT COUNT(*) as count FROM projects");
