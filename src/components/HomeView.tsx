@@ -330,7 +330,7 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
       >
         <div className="absolute inset-0 z-0">
           <img
-            src="/src/assets/images/agaro18.jpg"
+            src="../assets/images/agaro18.jpg"
             alt="Agaro Highland Banner"
             className="w-full h-full object-cover opacity-35"
             referrerPolicy="no-referrer"
