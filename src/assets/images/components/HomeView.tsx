@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { DICTIONARY } from '../data';
-import { getStoredMayor } from '../dataStore';
-import { Language } from '../types';
+import { DICTIONARY } from '../../../data';
+import { getStoredMayor } from '../../../dataStore';
+import { Language } from '../../../types';
 import ContactView from './ContactView';
 import ProjectsView from './ProjectsView';
+
+const agaro18Image = new URL('../agaro18.jpg', import.meta.url).href;
+
 import {
   Building,
   MapPin,
@@ -330,7 +333,7 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
       >
         <div className="absolute inset-0 z-0">
           <img
-            src="../assets/images/agaro18.jpg"
+            src={agaro18Image}
             alt="Agaro Highland Banner"
             className="w-full h-full object-cover opacity-35"
             referrerPolicy="no-referrer"

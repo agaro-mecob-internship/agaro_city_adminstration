@@ -3,7 +3,7 @@ import {
   Award, MapPin, ChevronRight, X, Mail, Phone, Globe,
   Briefcase, GraduationCap
 } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 
 interface CompactLeadershipSpotlightProps {
   currentLang?: Language;

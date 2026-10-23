@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Language } from './types';
-import HomeView from './components/HomeView';
-import AboutView from './components/AboutView';
-import ServicesView from './components/ServicesView';
-import DepartmentsView from './components/DepartmentsView';
-import NewsEventsView from './components/NewsEventsView';
-import ProjectsView from './components/ProjectsView';
-import ContactView from './components/ContactView';
-import LoginView from './components/LoginView';
-import AdminDashboard from './components/AdminDashboard';
-import ChatbotWidget from './components/ChatbotWidget';
+import HomeView from './assets/images/components/HomeView';
+import AboutView from './assets/images/components/AboutView';
+import ServicesView from './assets/images/components/ServicesView';
+import DepartmentsView from './assets/images/components/DepartmentsView';
+import NewsEventsView from './assets/images/components/NewsEventsView';
+import ProjectsView from './assets/images/components/ProjectsView';
+import ContactView from './assets/images/components/ContactView';
+import LoginView from './assets/images/components/LoginView';
+import AdminDashboard from './assets/images/components/AdminDashboard';
+import ChatbotWidget from './assets/images/components/ChatbotWidget';
 import { 
   Menu, 
   X, 

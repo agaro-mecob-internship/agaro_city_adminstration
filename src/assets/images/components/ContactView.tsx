@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Share2, MessageSquare, Clock, Send, ShieldCheck, Landmark } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 
 const API_BASE_URL = 'http://localhost/agaro/php_export';
 

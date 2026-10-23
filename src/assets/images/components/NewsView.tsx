@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 import { Calendar, Clock, User, ChevronRight, Image as ImageIcon, FileText } from 'lucide-react';
 
 interface NewsViewProps {

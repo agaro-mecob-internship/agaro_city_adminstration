@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Language, Project } from '../types';
+import { Language, Project } from '../../../types';
 import { Landmark, TrendingUp, CheckCircle, HardHat, FileText, BadgePercent, Loader2, Image as ImageIcon } from 'lucide-react';
 
 interface ProjectsViewProps {

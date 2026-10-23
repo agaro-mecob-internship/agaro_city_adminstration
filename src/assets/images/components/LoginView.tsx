@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 import { Lock, User, Shield, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface LoginViewProps {

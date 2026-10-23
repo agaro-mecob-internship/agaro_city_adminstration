@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 import { 
   LogOut, Plus, Edit, Trash2, Newspaper, Calendar, ClipboardList,
   Check, AlertCircle, RefreshCw, Shield, X, Save, Eye, Image,
-  Users, FileText, Settings, BarChart, Activity, Clock,
-  TrendingUp, Folder, Layers, Home, BookOpen, Heart, Briefcase,
+  Users, FileText, Settings, BarChart,
+  TrendingUp, Layers, Home, BookOpen, Heart, Briefcase,
   Coffee, Building, Droplet, ShoppingBag, Wrench, Award, ChevronRight,
-  LayoutDashboard, Server, UserCog, HelpCircle, Menu
+  LayoutDashboard, Menu
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -88,50 +88,15 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
     image: ''
   });
 
-  // Stats data
-  const stats = [
-    { label: 'Total Users', value: '2,543', icon: Users, color: 'blue', change: '+12%' },
-    { label: 'Service Requests', value: '348', icon: Activity, color: 'green', change: '+8%' },
-    { label: 'News & Updates', value: '56', icon: Newspaper, color: 'purple', change: '+5%' },
-    { label: 'Ongoing Projects', value: '23', icon: ClipboardList, color: 'orange', change: '+3%' },
-  ];
-
   // Sidebar menu items
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'service-management', label: 'SERVICE MANAGEMENT', icon: Server, isHeader: true },
-    { id: 'digital-services', label: 'Digital Services', icon: Folder },
-    { id: 'service-requests', label: 'Service Requests', icon: Activity },
-    { id: 'faqs', label: 'FAQs', icon: HelpCircle },
-    { id: 'user-management', label: 'USER MANAGEMENT', icon: UserCog, isHeader: true },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'roles-permissions', label: 'Roles & Permissions', icon: Shield },
     { id: 'content-header', label: 'CONTENT', icon: FileText, isHeader: true },
     { id: 'news', label: 'News', icon: Newspaper },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'projects', label: 'Projects', icon: ClipboardList },
     { id: 'pages', label: 'Pages', icon: FileText },
     { id: 'galleries', label: 'Galleries', icon: Image },
-    { id: 'documents', label: 'Documents', icon: Folder },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
-
-  // Recent activities
-  const recentActivities = [
-    { title: 'New service request submitted', detail: 'Birth Certificate Request', time: '2 mins ago' },
-    { title: 'New user registered', detail: 'temesgen21@gmail.com', time: '15 mins ago' },
-    { title: 'News published', detail: 'Road Construction Update', time: '1 hour ago' },
-    { title: 'Project updated', detail: 'Aqaro City Water Supply Project', time: '2 hours ago' },
-    { title: 'Document uploaded', detail: 'City Budget 2024.pdf', time: '3 hours ago' },
-  ];
-
-  // Latest service requests
-  const serviceRequests = [
-    { id: 1, service: 'Business License', requester: 'Abebe Kebede', status: 'Pending', date: 'May 31, 2024' },
-    { id: 2, service: 'Building Permit', requester: 'Selamawit Alemu', status: 'In Progress', date: 'May 31, 2024' },
-    { id: 3, service: 'Birth Certificate', requester: 'Mekdes Tadesse', status: 'Completed', date: 'May 30, 2024' },
-    { id: 4, service: 'Property Tax', requester: 'Yonas Girma', status: 'Pending', date: 'May 30, 2024' },
-    { id: 5, service: 'Trade License', requester: 'Hana Mohammed', status: 'In Progress', date: 'May 30, 2024' },
   ];
 
   const dict = {
@@ -290,46 +255,6 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
       en: 'Quick Actions',
       om: 'Gocha Dafaa',
       am: 'ፈጣን ተግባራት'
-    },
-    recentActivities: {
-      en: 'Recent Activities',
-      om: 'Gochaawwan Dhiyoo',
-      am: 'የቅርብ ጊዜ ተግባራት'
-    },
-    latestRequests: {
-      en: 'Latest Service Requests',
-      om: 'Gaaffii Tajaajila Haaraa',
-      am: 'የቅርብ ጊዜ የአገልግሎት ጥያቄዎች'
-    },
-    analytics: {
-      en: 'Analytics Overview',
-      om: 'Ibsa Xinxaalchaa',
-      am: 'የትንታኔ አጠቃላይ እይታ'
-    },
-    service: {
-      en: 'Service',
-      om: 'Tajaajila',
-      am: 'አገልግሎት'
-    },
-    requester: {
-      en: 'Requester',
-      om: 'Gaafataa',
-      am: 'ጠያቂ'
-    },
-    pending: {
-      en: 'Pending',
-      om: 'Eega',
-      am: 'በመጠበቅ ላይ'
-    },
-    inProgress: {
-      en: 'In Progress',
-      om: 'Gaggeeffamaa',
-      am: 'በሂደት ላይ'
-    },
-    completed: {
-      en: 'Completed',
-      om: 'Xumurame',
-      am: 'ተጠናቋል'
     },
     serviceManagement: {
       en: 'SERVICE MANAGEMENT',
@@ -1169,119 +1094,6 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
               <LogOut className="h-4 w-4" />
               {dict.logout[currentLang]}
             </button>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">{stat.label}</p>
-                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    </div>
-                    <div className={`p-3 rounded-lg bg-${stat.color}-50`}>
-                      <Icon className={`h-6 w-6 text-${stat.color}-600`} />
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <span className="text-xs text-green-600">{stat.change}</span>
-                    <span className="text-xs text-gray-400 ml-1">from last month</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Analytics Overview */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">{dict.analytics[currentLang]}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500">Website Visitors</p>
-                <div className="h-8 w-full bg-gray-200 rounded-full mt-2 overflow-hidden">
-                  <div className="h-full bg-emerald-600 rounded-full" style={{ width: '75%' }}></div>
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500">Service Requests</p>
-                <div className="h-8 w-full bg-gray-200 rounded-full mt-2 overflow-hidden">
-                  <div className="h-full bg-blue-600 rounded-full" style={{ width: '60%' }}></div>
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500">New Users</p>
-                <div className="h-8 w-full bg-gray-200 rounded-full mt-2 overflow-hidden">
-                  <div className="h-full bg-purple-600 rounded-full" style={{ width: '45%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activities and Service Requests */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Activities */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-emerald-600" />
-                  {dict.recentActivities[currentLang]}
-                </h3>
-              </div>
-              <div className="divide-y divide-gray-100">
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className="p-4 hover:bg-gray-50">
-                    <p className="text-sm font-medium text-gray-800">{activity.title}</p>
-                    <p className="text-sm text-gray-600">{activity.detail}</p>
-                    <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Latest Service Requests */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-emerald-600" />
-                  {dict.latestRequests[currentLang]}
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="p-3 text-xs font-medium text-gray-500 uppercase">#</th>
-                      <th className="p-3 text-xs font-medium text-gray-500 uppercase">{dict.service[currentLang]}</th>
-                      <th className="p-3 text-xs font-medium text-gray-500 uppercase">{dict.requester[currentLang]}</th>
-                      <th className="p-3 text-xs font-medium text-gray-500 uppercase">{dict.status[currentLang]}</th>
-                      <th className="p-3 text-xs font-medium text-gray-500 uppercase">{dict.dateLabel[currentLang]}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {serviceRequests.map((req) => (
-                      <tr key={req.id} className="hover:bg-gray-50">
-                        <td className="p-3 text-sm text-gray-500">{req.id}</td>
-                        <td className="p-3 text-sm font-medium text-gray-800">{req.service}</td>
-                        <td className="p-3 text-sm text-gray-600">{req.requester}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            req.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                            req.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {req.status}
-                          </span>
-                        </td>
-                        <td className="p-3 text-sm text-gray-500">{req.date}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
 
           {/* Quick Actions */}

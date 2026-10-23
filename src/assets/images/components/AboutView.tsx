@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Award, Navigation, Leaf, Landmark, Target, ArrowRight, Star } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 
 interface AboutViewProps {
   currentLang: Language;

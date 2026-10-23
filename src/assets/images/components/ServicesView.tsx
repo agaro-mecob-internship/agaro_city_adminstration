@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 import { 
   MapPin, Phone, Mail, Clock, Facebook, Twitter, Instagram, 
   Send, Youtube, ChevronRight, Crown, X,

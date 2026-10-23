@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { DEPARTMENTS_DATA } from '../data';
-import { getStoredCabinet, getStoredMayor } from '../dataStore';
-import { Language } from '../types';
+import { DEPARTMENTS_DATA } from '../../../data';
+import { getStoredCabinet, getStoredMayor } from '../../../dataStore';
+import { Language } from '../../../types';
 import { 
   Mail, Phone, Clock, ArrowRight, Shield, Sparkles, User, 
   Users, MapPin, Building, Globe, Send, CheckCircle, Award

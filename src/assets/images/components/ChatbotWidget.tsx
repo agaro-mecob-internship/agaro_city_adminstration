@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Bot, HelpCircle, Check, Coffee } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '../../../types';
 
 interface Message {
   id: string;
