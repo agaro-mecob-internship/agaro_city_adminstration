@@ -30,6 +30,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 
+const agaroLogo = new URL('./assets/images/agaro.jpg', import.meta.url).href;
+
 //import './components/ServicesView.css';
 
 function App() {
@@ -145,7 +147,7 @@ function App() {
               {/* Logo and Brand */}
               <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange('home')}>
                 <img 
-                  src="/src/assets/images/agaro.jpg" 
+                  src={agaroLogo}
                   alt="Agaro City Logo" 
                   className="h-10 w-10 rounded-full object-cover border-2 border-emerald-200"
                   onError={(e) => {
@@ -329,7 +331,7 @@ function App() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <img 
-                    src="/src/assets/images/agaro.jpg" 
+                    src={agaroLogo}
                     alt="Agaro City Logo" 
                     className="h-8 w-8 rounded-full object-cover border border-emerald-200"
                     onError={(e) => {
