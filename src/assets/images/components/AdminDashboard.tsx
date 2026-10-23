@@ -3,7 +3,7 @@ import { Language } from '../../../types';
 import { 
   LogOut, Plus, Edit, Trash2, Newspaper, Calendar, ClipboardList,
   Check, AlertCircle, RefreshCw, Shield, X, Save, Eye, Image,
-  Users, FileText, Settings, BarChart,
+  FileText, BarChart,
   TrendingUp, Layers, Home, BookOpen, Heart, Briefcase,
   Coffee, Building, Droplet, ShoppingBag, Wrench, Award, ChevronRight,
   LayoutDashboard, Menu
@@ -95,7 +95,6 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
     { id: 'news', label: 'News', icon: Newspaper },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'projects', label: 'Projects', icon: ClipboardList },
-    { id: 'pages', label: 'Pages', icon: FileText },
     { id: 'galleries', label: 'Galleries', icon: Image },
   ];
 
@@ -287,35 +286,10 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
       om: 'Gaaffiiwwan',
       am: 'ተዘውትረው የሚጠየቁ ጥያቄዎች'
     },
-    users: {
-      en: 'Users',
-      om: 'Fayyadamtoota',
-      am: 'ተጠቃሚዎች'
-    },
-    rolesPermissions: {
-      en: 'Roles & Permissions',
-      om: 'Gahee fi Hayyama',
-      am: 'ሚናዎች እና ፈቃዶች'
-    },
-    pages: {
-      en: 'Pages',
-      om: 'Fuula',
-      am: 'ገጾች'
-    },
     galleries: {
       en: 'Galleries',
       om: 'Kuusaa Fakkii',
       am: 'ማሳያዎች'
-    },
-    documents: {
-      en: 'Documents',
-      om: 'Sanadoota',
-      am: 'ሰነዶች'
-    },
-    settings: {
-      en: 'Settings',
-      om: 'Qindaa\'ina',
-      am: 'ቅንብሮች'
     },
     addEvent: {
       en: 'Add Event',
@@ -327,15 +301,10 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
       om: 'Pirojektii Iddahi',
       am: 'ፕሮጀክት አክል'
     },
-    manageUsers: {
-      en: 'Manage Users',
-      om: 'Fayyadamtoota Bulchi',
-      am: 'ተጠቃሚዎችን አስተዳድር'
-    },
-    systemSettings: {
-      en: 'System Settings',
-      om: 'Qindaa\'ina Sistimii',
-      am: 'የስርዓት ቅንብሮች'
+    addNews: {
+      en: 'Add News',
+      om: 'Oduu Iddahi',
+      am: 'ዜና አክል'
     }
   };
 
@@ -1102,6 +1071,16 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => {
+                  setActiveSection('news');
+                  setShowForm(true);
+                  setActiveMenuItem('news');
+                }}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+              >
+                <Newspaper className="h-4 w-4" /> {dict.addNews[currentLang]}
+              </button>
+              <button
+                onClick={() => {
                   setActiveSection('events');
                   setShowForm(true);
                   setActiveMenuItem('events');
@@ -1119,12 +1098,6 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
                 <ClipboardList className="h-4 w-4" /> {dict.addProject[currentLang]}
-              </button>
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
-                <Users className="h-4 w-4" /> {dict.manageUsers[currentLang]}
-              </button>
-              <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2">
-                <Settings className="h-4 w-4" /> {dict.systemSettings[currentLang]}
               </button>
             </div>
           </div>
