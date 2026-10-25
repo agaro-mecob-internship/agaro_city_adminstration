@@ -9,7 +9,6 @@ interface LoginViewProps {
 
 // API Base URL - change this to match your PHP backend location
 const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}/agaro/php_export`;
-
 export default function LoginView({ currentLang, onLogin }: LoginViewProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
