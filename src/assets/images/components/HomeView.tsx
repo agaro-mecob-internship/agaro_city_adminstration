@@ -17,7 +17,6 @@ import {
   Sparkles,
   FileText,
   Landmark,
-  Search,
   HelpCircle,
   ChevronLeft,
   ChevronRight,
@@ -48,7 +47,6 @@ interface HomeViewProps {
 const API_BASE_URL = 'http://localhost/agaro/php_export';
 
 export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps) {
-  const [localSearch, setLocalSearch] = useState('');
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [mayorInfo, setMayorInfo] = useState<any>(null);
   const [latestNews, setLatestNews] = useState<any[]>([]);
@@ -289,26 +287,6 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
     setGalleryIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
   };
 
-  const handleQuickSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanSearch = localSearch.toLowerCase().trim();
-    if (!cleanSearch) return;
-
-    if (cleanSearch.includes('license') || cleanSearch.includes('hayyama') || cleanSearch.includes('ፈቃድ') || cleanSearch.includes('business')) {
-      onNavigateToTab('services', 'business-license');
-    } else if (cleanSearch.includes('resident') || cleanSearch.includes('residency') || cleanSearch.includes('eenyummaa') || cleanSearch.includes('ነዋሪነት')) {
-      onNavigateToTab('services', 'resident-certificate');
-    } else if (cleanSearch.includes('land') || cleanSearch.includes('plot') || cleanSearch.includes('pilaanii') || cleanSearch.includes('መሬት')) {
-      onNavigateToTab('services', 'land-services');
-    } else if (cleanSearch.includes('complain') || cleanSearch.includes('trash') || cleanSearch.includes('leak') || cleanSearch.includes('ቆሻሻ') || cleanSearch.includes('አቤቱታ')) {
-      onNavigateToTab('services', 'submit-complaint');
-    } else if (cleanSearch.includes('pay') || cleanSearch.includes('fee') || cleanSearch.includes('tax') || cleanSearch.includes('ብር')) {
-      onNavigateToTab('services', 'pay-fees');
-    } else {
-      onNavigateToTab('services', 'all');
-    }
-  };
-
   const getSrvIcon = (name: string) => {
     switch (name) {
       case 'Building':
@@ -342,7 +320,7 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
           <div className="absolute inset-0 bg-gradient-to- from-brand-green-950/90 via-transparent to-transparent"></div>
         </div>
 
-        <div className="absolute inset-0 z-10 flex flex-col justify-between p-6 sm:p-10 md:p-12 text-white">
+        <div className="absolute inset-0 z-10 flex flex-col justify-center p-6 sm:p-10 md:p-12 text-white">
           <div className="max-w-2xl space-y-4 pt-4 md:pt-8">
             <div className="inline-flex items-center gap-1.5 bg-brand-gold-500/20 border border-brand-gold-500/35 px-3 py-1 rounded-full text-brand-gold-500 text-xs font-semibold uppercase tracking-wider backdrop-blur-xs font-display">
               <Coffee className="h-3.5 w-3.5 shrink-0" />
@@ -356,30 +334,6 @@ export default function HomeView({ currentLang, onNavigateToTab }: HomeViewProps
             </p>
           </div>
 
-          <div className="max-w-xl w-full">
-            <form onSubmit={handleQuickSearchSubmit} className="flex gap-2 bg-white/10 p-1.5 rounded-2xl border border-white/20 backdrop-blur-md w-full">
-              <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-200" />
-                <input
-                  type="text"
-                  value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
-                  placeholder={DICTIONARY.quickSearchPlaceholder[currentLang]}
-                  className="w-full pl-10 pr-4 py-3 text-xs.5 text-white placeholder-slate-300 bg-transparent border-0 focus:ring-0 focus:outline-none"
-                />
-              </div>
-              <button
-                id="btn-hero-search-submit"
-                type="submit"
-                className="bg-brand-gold-500 hover:bg-brand-gold-600 text-brand-coffee-900 font-bold px-5 rounded-xl text-xs uppercase tracking-wider transition-colors cursor-pointer shrink-0"
-              >
-                {DICTIONARY.searchBtn[currentLang]}
-              </button>
-            </form>
-            <span className="block text-[11px] text-slate-300 mt-2 ml-1 font-medium italic">
-              * {DICTIONARY.trackedNotice[currentLang]}
-            </span>
-          </div>
         </div>
       </div>
 

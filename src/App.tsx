@@ -9,7 +9,6 @@ import ProjectsView from './assets/images/components/ProjectsView';
 import ContactView from './assets/images/components/ContactView';
 import LoginView from './assets/images/components/LoginView';
 import AdminDashboard from './assets/images/components/AdminDashboard';
-import ChatbotWidget from './assets/images/components/ChatbotWidget';
 import { 
   Menu, 
   X, 
@@ -86,6 +85,12 @@ function App() {
   };
 
   const handleLogout = () => {
+    void fetch(`${window.location.protocol}//${window.location.hostname}/agaro/php_export/admin_logout.php`, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch((error) => {
+      console.error('Error ending admin session:', error);
+    });
     setIsAuthenticated(false);
     setActiveTab('home');
   };
@@ -317,11 +322,6 @@ function App() {
       <main className={activeTab === 'login' || activeTab === 'admin' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'}>
         {renderView()}
       </main>
-
-      {/* Chatbot Widget - only show on non-admin pages */}
-      {activeTab !== 'login' && activeTab !== 'admin' && (
-        <ChatbotWidget currentLang={currentLang} />
-      )}
 
       {/* Footer - only show on non-admin pages */}
       {activeTab !== 'login' && activeTab !== 'admin' && (

@@ -8,7 +8,7 @@ interface LoginViewProps {
 }
 
 // API Base URL - change this to match your PHP backend location
-const API_BASE_URL = 'http://localhost/agaro/php_export';
+const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}/agaro/php_export`;
 
 export default function LoginView({ currentLang, onLogin }: LoginViewProps) {
   const [username, setUsername] = useState('');
@@ -70,40 +70,27 @@ export default function LoginView({ currentLang, onLogin }: LoginViewProps) {
     setLoading(true);
 
     try {
-      // Try to authenticate with PHP backend
       const response = await fetch(`${API_BASE_URL}/admin_login.php`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
       });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          // Login successful
-          onLogin();
-          return;
-        } else {
-          setError(result.error || dict.error[currentLang]);
-          setLoading(false);
-          return;
-        }
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        setError(result.error || dict.error[currentLang]);
+        setLoading(false);
+        return;
       }
+      onLogin();
     } catch (error) {
-      console.log('PHP backend not available, using fallback login');
-    }
-
-    // Fallback: Hardcoded credentials (if PHP backend is not available)
-    setTimeout(() => {
-      if (username === 'admin' && password === 'agaro2026') {
-        onLogin();
-      } else {
-        setError(dict.error[currentLang]);
-      }
+      console.error('Admin login failed:', error);
+      setError(error instanceof Error ? error.message : dict.error[currentLang]);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

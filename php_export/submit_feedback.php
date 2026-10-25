@@ -56,7 +56,7 @@ try {
     }
 
     $stmt = $db->prepare(
-        'INSERT INTO contact_feedback (name, phone, email, subject, message) VALUES (?, ?, ?, ?, ?)'
+        "INSERT INTO contact_feedback (name, phone, email, subject, message, status) VALUES (?, ?, ?, ?, ?, 'new')"
     );
     $stmt->execute([$name, $phone, $email, $subject, $message]);
 

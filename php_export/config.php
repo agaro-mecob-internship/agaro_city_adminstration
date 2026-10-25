@@ -6,6 +6,8 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'agaro_municipal_db');
+define('AGARO_ADMIN_USERNAME', 'admin');
+define('AGARO_ADMIN_PASSWORD_HASH', '$2y$12$E.ClNOmGrnkCx3L/Z2GzWu1cftcErP357oqxHs1BlLJEbxRk0Vee.');
 
 function getDB() {
     static $pdo = null;
@@ -96,6 +98,12 @@ function initializeTables($pdo) {
         INDEX idx_feedback_status (status),
         INDEX idx_feedback_created_at (created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    $feedbackStatusColumn = $pdo->query("SHOW COLUMNS FROM contact_feedback LIKE 'status'")->fetch();
+    if ($feedbackStatusColumn && stripos($feedbackStatusColumn['Type'], "'reviewed'") === false) {
+        $pdo->exec("ALTER TABLE contact_feedback
+            MODIFY status ENUM('new', 'reviewed', 'read', 'replied', 'archived') DEFAULT 'new'");
+    }
 
     // Gallery and government cabinet image overrides
     $pdo->exec("CREATE TABLE IF NOT EXISTS media_assets (

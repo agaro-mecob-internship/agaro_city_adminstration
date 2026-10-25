@@ -2,11 +2,24 @@
 // admin_logout.php - Admin logout endpoint
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$originParts = parse_url($origin);
+$requestHost = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? ''));
+$isAllowedDevelopmentOrigin = is_array($originParts)
+    && strtolower($originParts['host'] ?? '') === $requestHost
+    && ($originParts['port'] ?? null) === 3000
+    && ($originParts['scheme'] ?? '') === ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+if ($isAllowedDevelopmentOrigin) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Credentials: true');
+    header('Vary: Origin');
+}
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 // Clear all session variables
 $_SESSION = array();

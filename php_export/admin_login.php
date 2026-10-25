@@ -2,7 +2,24 @@
 // admin_login_db.php - Database-based admin authentication
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+session_set_cookie_params([
+    'httponly' => true,
+    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+    'samesite' => 'Lax',
+]);
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$originParts = parse_url($origin);
+$requestHost = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? ''));
+$isAllowedDevelopmentOrigin = is_array($originParts)
+    && strtolower($originParts['host'] ?? '') === $requestHost
+    && ($originParts['port'] ?? null) === 3000
+    && ($originParts['scheme'] ?? '') === ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+if ($isAllowedDevelopmentOrigin) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Credentials: true');
+    header('Vary: Origin');
+}
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -30,44 +47,33 @@ if (!$input) {
     exit();
 }
 
-$username = $input['username'] ?? '';
-$password = $input['password'] ?? '';
+$username = trim((string) ($input['username'] ?? ''));
+$password = (string) ($input['password'] ?? '');
 
-try {
-    $db = getDB();
-    
-    // Query to check admin credentials
-    $stmt = $db->prepare("SELECT * FROM admins WHERE username = ? AND password = ?");
-    $stmt->execute([$username, md5($password)]); // Using MD5 for demo, use password_hash in production
-    $admin = $stmt->fetch();
-    
-    if ($admin) {
-        session_start();
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_id'] = $admin['id'];
-        $_SESSION['admin_username'] = $admin['username'];
-        $_SESSION['login_time'] = time();
-        
-        echo json_encode([
-            'success' => true,
-            'message' => 'Login successful',
-            'user' => [
-                'username' => $admin['username'],
-                'role' => $admin['role'] ?? 'admin'
-            ]
-        ]);
-    } else {
-        http_response_code(401);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Invalid username or password'
-        ]);
-    }
-} catch (PDOException $e) {
-    http_response_code(500);
+if ($username !== AGARO_ADMIN_USERNAME || !password_verify($password, AGARO_ADMIN_PASSWORD_HASH)) {
+    http_response_code(401);
     echo json_encode([
         'success' => false,
-        'error' => 'Database error: ' . $e->getMessage()
+        'error' => 'Invalid username or password'
     ]);
+    exit();
 }
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+session_regenerate_id(true);
+$_SESSION['agaro_admin_authed'] = true;
+$_SESSION['admin_logged_in'] = true;
+$_SESSION['admin_username'] = AGARO_ADMIN_USERNAME;
+$_SESSION['login_time'] = time();
+
+echo json_encode([
+    'success' => true,
+    'message' => 'Login successful',
+    'user' => [
+        'username' => AGARO_ADMIN_USERNAME,
+        'role' => 'admin'
+    ]
+]);
 ?>

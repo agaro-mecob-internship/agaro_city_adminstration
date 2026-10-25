@@ -6,7 +6,7 @@ import {
   FileText, BarChart,
   TrendingUp, Layers, Home, BookOpen, Heart, Briefcase,
   Coffee, Building, Droplet, ShoppingBag, Wrench, Award, ChevronRight,
-  LayoutDashboard, Menu
+  LayoutDashboard, Menu, MessageSquare
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -15,7 +15,7 @@ interface AdminDashboardProps {
 }
 
 // API Base URL
-const API_BASE_URL = 'http://localhost/agaro/php_export';
+const API_BASE_URL = `${window.location.protocol}//${window.location.hostname}/agaro/php_export`;
 
 // Category options for all sections
 const CATEGORIES = {
@@ -96,6 +96,7 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'projects', label: 'Projects', icon: ClipboardList },
     { id: 'galleries', label: 'Galleries', icon: Image },
+    { id: 'feedback', label: 'Feedback', icon: MessageSquare },
   ];
 
   const dict = {
@@ -524,6 +525,11 @@ export default function AdminDashboard({ currentLang, onLogout }: AdminDashboard
   };
 
   const handleMenuItemClick = (itemId: string) => {
+    if (itemId === 'feedback') {
+      window.location.assign(`${API_BASE_URL}/feadback.php`);
+      return;
+    }
+
     setActiveMenuItem(itemId);
     if (itemId === 'news') {
       setActiveSection('news');
